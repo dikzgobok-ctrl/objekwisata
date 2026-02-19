@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="id"> 
+ <head> 
+  <h3>Formulir Pemesanan Jasa</h3> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Formulir Pemesanan | Lensa Kreatif</title> 
+  <link rel="stylesheet" href="style.css"> 
+ </head> 
+ <body> 
+  <header> 
+   <nav> 
+    <ul> 
+     <li><a href="wisata.html">Ke Halaman Utama</a></li> 
+    </ul> 
+   </nav> 
+  </header> 
+  <main class="container"> 
+   <form id="orderForm"> 
+    <input type="hidden" id="promo_code" name="promo_code" value="DISCOUNT2026"> 
+    <section> 
+     <h3>Data Pribadi</h3> 
+     <div class="form-group"> <label for="name">Nama Lengkap:</label> 
+      <input type="text" id="name" name="nama" placeholder="Masukkan nama Anda" required> 
+     </div> 
+     <div class="form-group"> <label for="pass">Password Akun:</label> 
+      <input type="password" id="pass" name="pass" placeholder="Password untuk cek status"> 
+     </div> 
+     <div class="form-group"> <label for="email">Email:</label> 
+      <input type="email" id="email" name="email" required> 
+     </div> 
+     <div class="form-group"> <label for="telepon">Nomor WhatsApp (Tel):</label> 
+      <input type="tel" id="telepon" name="telepon"> 
+     </div>
+     <div class="form-group"> <label for="alamat">Alamat:</label> <textarea id="alamat" name="alamat" rows="3" cols="30"></textarea> 
+     </div> 
+     <div class="form-group"> <label for="kodepos">Kode Pos:</label> 
+      <input type="text" id="kodepos" name="kodepos" placeholder="Masukkan kode pos anda (cth: 40123)" required> 
+     </div> 
+    </section> 
+    <section> 
+     <h3>Detail Pesanan</h3> 
+     <div class="form-group"> <label for="cari">Cari Paket Wisata (Search):</label> 
+      <input type="search" id="cari" name="cari" placeholder="Ketik paket..."> 
+     </div> 
+     <div class="form-group"> <label for="tanggal">Tanggal yang ini dipesan:</label> 
+      <input type="date" id="tanggal" name="tanggal"> 
+     </div> 
+    <div from class="form-group"><label for="personal">personal</label>
+    <select name="personal" id="personal">
+      <option value="Sendiri">sendiri</option>
+      <option value="BerDua">BerDua</option>
+      <option value="Bertiga">bertiga</option>
+      <option value="berempat">Berempat</option>
+      <option value="Lebih dari 4">Ramean</option>
+            <input type="text" id="Lebih dari 4" name="Ramean" placeholder="Pilihan lebih dari 4" required> 
+
+    </select>
+    
+    </div>
+    </section> 
+    <section> 
+     <h3>Pilihan Tambahan</h3> 
+     <div class="form-group"> <label>Metode Pembayaran :</label>
+      <br> 
+      <input type="radio" name="payment" value="Transfer" checked> M-Banking</input>
+      <input type="radio" name="payment" value="E-Wallet"> E-Wallet</input>
+     </div> 
+     <div class="form-group"> <label>Layanan Tambahan :</label>
+      <br> 
+      <input type="checkbox" name="addon" value="Pemandu wisata"> Pemandu wisata
+     </div> 
+     <div class="form-group"> <label for="dokumen">Unggah Bukti KTP/ID (File):</label> 
+      <input type="file" id="dokumen" name="dokumen"> 
+     </div> 
+    </section> 
+    <section> 
+     <input type="button" value="Cek Ketersediaan" onclick="alert('Slot Tersedia!')"> 
+     <br>
+     <br>
+     <input type="reset" value="Kosongkan Form"> 
+     <br>
+     <br> 
+     <hr>
+     <input type="submit" value="Kirim Pesanan Sekarang"> 
+    </section> 
+   </form> 
+   <div id="result" style="margin-top: 20px; padding: 15px; background: #e8f4fd; display: none;"> 
+    <h3>Data Berhasil Disimpan!</h3> 
+    <p id="displayData"></p> 
+   </div> 
+  </main> 
+  <script>
+        document.getElementById('orderForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah reload halaman
+
+            // 1. Mengambil data menggunakan FormData
+            const formData = new FormData(this);
+            const dataObj = {};
+
+            // Penanganan khusus untuk checkbox (karena bisa pilih lebih dari satu)
+            const addons = formData.getAll('addon');
+
+            // 2. Memproses data menjadi Object agar mudah disimpan
+            formData.forEach((value, key) => {
+                if (key === 'addon') {
+                    dataObj[key] = addons;
+                } else if (value instanceof File) {
+                    dataObj[key] = value.name ? value.name : "Tidak ada file";
+                } else {
+                    dataObj[key] = value;
+                }
+            });
+
+            // 3. Menyimpan ke LocalStorage (Simulasi Database di Browser)
+            localStorage.setItem('pesananTerakhir', JSON.stringify(dataObj));
+
+            // 4. Membuat tampilan output yang lebih cantik
+            let outputHtml = '<ul style="list-style: none; padding: 0;">';
+            for (const [key, value] of Object.entries(dataObj)) {
+                const label = key.replace('_', ' ').toUpperCase();
+                outputHtml += `<li style="margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+                    <strong>${label}:</strong> ${Array.isArray(value) ? value.join(', ') : value}
+                </li>`;
+            }
+            outputHtml += '</ul>';
+
+            // 5. Menampilkan hasil di halaman
+            const resultDiv = document.getElementById('result');
+            const displayData = document.getElementById('displayData');
+
+            displayData.innerHTML = outputHtml;
+            resultDiv.style.display = 'block';
+
+            // Efek Scroll ke bawah agar user melihat hasilnya
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+            // 6. Alert penutup
+            alert("Halo " + dataObj.nama + ", data pesanan Anda telah disimpan di sistem lokal!");
+            
+            // Opsional: Jika ingin mengosongkan form setelah submit
+            // this.reset();
+        });
+
+        // Tambahan: Cek apakah ada data tersimpan saat halaman baru dibuka
+        window.addEventListener('load', () => {
+            const savedData = localStorage.getItem('pesananTerakhir');
+            if (savedData) {
+                console.log("Data pesanan terakhir ditemukan:", JSON.parse(savedData));
+            }
+        });
+    </script> 
+ </body>
+</html>
